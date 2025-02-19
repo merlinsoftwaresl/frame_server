@@ -1,20 +1,26 @@
 import argparse
-import asyncio
-import websockets
+from fastapi import FastAPI
+import uvicorn
 from server.config import Config
 from server.image_loader import load_images_from_folder
-from server.handlers import handle_client
+from server.handlers import setup_routes
 
-async def main():
+app = FastAPI()
+
+def main():
+    # Load images
     load_images_from_folder(args.folder)
-    server = await websockets.serve(handle_client, Config.SERVER_HOST, Config.SERVER_PORT)
-    print("Server started")
-    await server.wait_closed()
+    
+    # Setup routes
+    setup_routes(app)
+    
+    # Start server
+    uvicorn.run(app, host=Config.SERVER_HOST, port=Config.SERVER_PORT)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="WebSocket image server")
+    parser = argparse.ArgumentParser(description="REST image server")
     parser.add_argument("--folder", type=str, default=Config.IMAGE_FOLDER, help="Path to the folder containing images")
     args = parser.parse_args()
     Config.IMAGE_FOLDER = args.folder
 
-    asyncio.run(main())
+    main()

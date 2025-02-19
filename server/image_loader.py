@@ -9,6 +9,11 @@ def load_images_from_folder(folder_path):
     if not os.path.exists(folder_path):
         print(f"Assets folder not found: {folder_path}")
         return
+    
+    # Clear existing queues
+    image_queue.clear()
+    image_map.clear()
+    
     for filename in sorted(os.listdir(folder_path)):
         file_path = os.path.join(folder_path, filename)
         if os.path.isfile(file_path):
